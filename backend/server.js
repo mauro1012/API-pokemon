@@ -13,11 +13,12 @@ const port = 3000;
 // --- Configuración de CORS y Middleware ---
 // Permite peticiones desde tu frontend. Asegúrate de que el puerto coincida con tu Live Server.
 app.use(cors({
-    origin: 'http://127.0.0.1:5500', 
-    methods: 'GET,POST',
-    credentials: true,
+    origin: '*', // Permite cualquier origen, crucial en entornos como Codespaces
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }));
-app.use(express.json()); // Middleware para parsear el body de las peticiones JSON
+app.use(express.json());
 
 // --- Conexión a MySQL usando Variables de Entorno ---
 const db = mysql.createConnection({
