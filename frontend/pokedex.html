@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex - Consumo API</title>
+</head>
+<body>
+    <header>
+        <h1 id="welcomeMessage">Cargando Pokédex...</h1>
+        <button id="logoutButton">Cerrar Sesión</button>
+    </header>
+
+    <hr>
+    
+    <h2>Búsqueda Pokémon</h2>
+    <input type="text" id="pokemonName" placeholder="Ingresa nombre o ID de Pokémon">
+    <button onclick="fetchPokemon()">Buscar Pokémon</button>
+    
+    <div id="pokemonData" style="margin-top: 20px; border: 1px solid #ccc; padding: 15px;">
+        <h2>Resultado de Búsqueda:</h2>
+    </div>
+
+    <script>
+        const POKEAPI_BASE = 'https://pokeapi.co/api/v2/pokemon/';
+
+        // 1. Verificar el estado del Login al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userEmail = localStorage.getItem('userEmail');
+
+            if (isLoggedIn !== 'true') {
+                window.location.href = 'index.html'; // Regresar al login
+            } else {
+                // Muestra un mensaje de bienvenida
+                const userName = userEmail ? userEmail.split('@')[0] : 'Entrenador';
+                document.getElementById('welcomeMessage').textContent = `¡Bienvenido, ${userName}! Tu Pokédex te espera.`;
+            }
+        });
+        
+        // 2. Lógica de Logout
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'index.html';
+        });
+
+
+        // 3. Lógica para Consumir la PokéAPI (Vanilla JS)
+        async function fetchPokemon() {
+            const nameOrId = document.getElementById('pokemonName').value.toLowerCase();
+            const output = document.getElementById('pokemonData');
+            output.innerHTML = '<h2>Buscando...</h2>';
+
+            if (!nameOrId) {
+                output.innerHTML = '<h2>Por favor, ingresa un nombre o ID de Pokémon.</h2>';
+                return;
+            }
+
+            try {
+                const response = await fetch(POKEAPI_BASE + nameOrId);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        output.innerHTML = '<h2>¡Pokémon no encontrado! Revisa la ortografía o el ID.</h2>';
+                        return;
+                    }
+                    throw new Error('Error en la API de Pokémon');
+                }
+
+                const data = await response.json();
+                displayPokemon(data);
+
+            } catch (error) {
+                console.error('Error al obtener datos de Pokémon:', error);
+                output.innerHTML = '<h2>Ocurrió un error al buscar el Pokémon.</h2>';
+            }
+        }
+
+        function displayPokemon(pokemon) {
+            const output = document.getElementById('pokemonData');
+            
+            const types = pokemon.types.map(typeInfo => typeInfo.type.name).join(', ');
+            const abilities = pokemon.abilities.map(abInfo => abInfo.ability.name).join(', ');
+            const imageUrl = pokemon.sprites.front_default; // Imagen frontal
+
+            output.innerHTML = `
+                <h3>No. ${pokemon.id} - ${pokemon.name.toUpperCase()}</h3>
+                <img src="${imageUrl}" alt="${pokemon.name}" style="width: 150px; height: 150px;">
+                <p><strong>Tipo(s):</strong> ${types}</p>
+                <p><strong>Peso:</strong> ${pokemon.weight / 10} kg</p>
+                <p><strong>Habilidades:</strong> ${abilities}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
