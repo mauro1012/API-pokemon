@@ -1,0 +1,8 @@
+# Directorios de Node
+node_modules/
+
+# Variables de Entorno
+.env
+
+# Archivos de logs
+*.log
