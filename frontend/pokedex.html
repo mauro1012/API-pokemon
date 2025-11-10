@@ -1,97 +1,113 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokédex - Consumo API</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokédex - API Consumption</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <h1 id="welcomeMessage">Cargando Pokédex...</h1>
-        <button id="logoutButton">Cerrar Sesión</button>
-    </header>
+  <!-- 🧭 Header -->
+  <header>
+    <h1 id="welcomeMessage">Loading Pokédex...</h1>
+    <button id="logoutButton" class="btn" style="background: var(--accent);">Log Out</button>
+  </header>
 
-    <hr>
-    
-    <h2>Búsqueda Pokémon</h2>
-    <input type="text" id="pokemonName" placeholder="Ingresa nombre o ID de Pokémon">
-    <button onclick="fetchPokemon()">Buscar Pokémon</button>
-    
-    <div id="pokemonData" style="margin-top: 20px; border: 1px solid #ccc; padding: 15px;">
-        <h2>Resultado de Búsqueda:</h2>
-    </div>
+  <!-- 📦 Main -->
+  <main>
+    <section class="card" style="max-width: 600px; margin: 2rem auto;">
+      <h2 style="color: var(--primary); margin-bottom: 1rem;">Pokémon Search</h2>
 
-    <script>
-        const POKEAPI_BASE = 'https://pokeapi.co/api/v2/pokemon/';
+      <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem;">
+        <input 
+          type="text" 
+          id="pokemonName" 
+          placeholder="Enter Pokémon name or ID" 
+          style="flex: 1; padding: 0.8rem; border: 1.5px solid var(--primary); border-radius: var(--radius); font-size: 1rem;"
+        >
+        <button onclick="fetchPokemon()" class="btn">Search</button>
+      </div>
 
-        // 1. Verificar el estado del Login al cargar la página
-        document.addEventListener('DOMContentLoaded', () => {
-            const isLoggedIn = localStorage.getItem('isLoggedIn');
-            const userEmail = localStorage.getItem('userEmail');
+      <div id="pokemonData" style="margin-top: 1rem; border: 1px solid #ddd; border-radius: var(--radius); padding: 1rem; background: #fafafa;">
+        <h3>Search Results:</h3>
+      </div>
+    </section>
+  </main>
 
-            if (isLoggedIn !== 'true') {
-                window.location.href = 'index.html'; // Regresar al login
-            } else {
-                // Muestra un mensaje de bienvenida
-                const userName = userEmail ? userEmail.split('@')[0] : 'Entrenador';
-                document.getElementById('welcomeMessage').textContent = `¡Bienvenido, ${userName}! Tu Pokédex te espera.`;
-            }
-        });
-        
-        // 2. Lógica de Logout
-        document.getElementById('logoutButton').addEventListener('click', () => {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userEmail');
-            window.location.href = 'index.html';
-        });
+  <!-- ⚡ Footer -->
+  <footer>
+    © 2025 PokéLogs | Academic Project
+  </footer>
 
+  <script>
+    const POKEAPI_BASE = 'https://pokeapi.co/api/v2/pokemon/';
 
-        // 3. Lógica para Consumir la PokéAPI (Vanilla JS)
-        async function fetchPokemon() {
-            const nameOrId = document.getElementById('pokemonName').value.toLowerCase();
-            const output = document.getElementById('pokemonData');
-            output.innerHTML = '<h2>Buscando...</h2>';
+    // 1️⃣ Check login status when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      const userEmail = localStorage.getItem('userEmail');
 
-            if (!nameOrId) {
-                output.innerHTML = '<h2>Por favor, ingresa un nombre o ID de Pokémon.</h2>';
-                return;
-            }
+      if (isLoggedIn !== 'true') {
+        window.location.href = 'index.html'; // Redirect to login if not authenticated
+      } else {
+        const userName = userEmail ? userEmail.split('@')[0] : 'Trainer';
+        document.getElementById('welcomeMessage').textContent = `Welcome, ${userName}! Your Pokédex awaits.`;
+      }
+    });
 
-            try {
-                const response = await fetch(POKEAPI_BASE + nameOrId);
-                
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        output.innerHTML = '<h2>¡Pokémon no encontrado! Revisa la ortografía o el ID.</h2>';
-                        return;
-                    }
-                    throw new Error('Error en la API de Pokémon');
-                }
+    // 2️⃣ Logout Logic
+    document.getElementById('logoutButton').addEventListener('click', () => {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userEmail');
+      window.location.href = 'index.html';
+    });
 
-                const data = await response.json();
-                displayPokemon(data);
+    // 3️⃣ Fetch Pokémon Data from PokéAPI
+    async function fetchPokemon() {
+      const nameOrId = document.getElementById('pokemonName').value.toLowerCase();
+      const output = document.getElementById('pokemonData');
+      output.innerHTML = '<h3>Searching...</h3>';
 
-            } catch (error) {
-                console.error('Error al obtener datos de Pokémon:', error);
-                output.innerHTML = '<h2>Ocurrió un error al buscar el Pokémon.</h2>';
-            }
+      if (!nameOrId) {
+        output.innerHTML = '<h3>Please enter a Pokémon name or ID.</h3>';
+        return;
+      }
+
+      try {
+        const response = await fetch(POKEAPI_BASE + nameOrId);
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            output.innerHTML = '<h3>Pokémon not found! Please check the name or ID.</h3>';
+            return;
+          }
+          throw new Error('PokéAPI error');
         }
 
-        function displayPokemon(pokemon) {
-            const output = document.getElementById('pokemonData');
-            
-            const types = pokemon.types.map(typeInfo => typeInfo.type.name).join(', ');
-            const abilities = pokemon.abilities.map(abInfo => abInfo.ability.name).join(', ');
-            const imageUrl = pokemon.sprites.front_default; // Imagen frontal
+        const data = await response.json();
+        displayPokemon(data);
+      } catch (error) {
+        console.error('Error fetching Pokémon:', error);
+        output.innerHTML = '<h3>There was an error fetching the Pokémon data.</h3>';
+      }
+    }
 
-            output.innerHTML = `
-                <h3>No. ${pokemon.id} - ${pokemon.name.toUpperCase()}</h3>
-                <img src="${imageUrl}" alt="${pokemon.name}" style="width: 150px; height: 150px;">
-                <p><strong>Tipo(s):</strong> ${types}</p>
-                <p><strong>Peso:</strong> ${pokemon.weight / 10} kg</p>
-                <p><strong>Habilidades:</strong> ${abilities}</p>
-            `;
-        }
-    </script>
+    // 4️⃣ Display Pokémon Information
+    function displayPokemon(pokemon) {
+      const output = document.getElementById('pokemonData');
+
+      const types = pokemon.types.map(typeInfo => typeInfo.type.name).join(', ');
+      const abilities = pokemon.abilities.map(abInfo => abInfo.ability.name).join(', ');
+      const imageUrl = pokemon.sprites.front_default;
+
+      output.innerHTML = `
+        <h3>No. ${pokemon.id} - ${pokemon.name.toUpperCase()}</h3>
+        <img src="${imageUrl}" alt="${pokemon.name}" style="width: 150px; height: 150px; image-rendering: pixelated;">
+        <p><strong>Type(s):</strong> ${types}</p>
+        <p><strong>Weight:</strong> ${(pokemon.weight / 10).toFixed(1)} kg</p>
+        <p><strong>Abilities:</strong> ${abilities}</p>
+      `;
+    }
+  </script>
 </body>
 </html>

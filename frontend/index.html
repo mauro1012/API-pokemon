@@ -1,90 +1,128 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokéLogs - Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PokéLogs - Login</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>Inicio de Sesión</h1>
-    <form id="loginForm">
-        <input type="email" id="email" placeholder="Email de Entrenador" required><br><br>
-        <input type="password" id="password" placeholder="Contraseña" required><br><br>
-        <button type="submit">Iniciar Sesión</button>
-        <p id="message"></p>
-    </form>
-    <button id="registerButton">Registrarme</button>
+  <!-- 🧭 Header -->
+  <header>
+    PokéLogs - Pokémon Trainers
+  </header>
 
-    <script>
-        const API_URL = 'http://localhost:3000'; // URL de tu Backend
+  <!-- 📦 Main Content -->
+  <main>
+    <section class="card" style="max-width: 400px; margin: 0 auto;">
+      <h2 style="color: var(--primary); margin-bottom: 1rem;">Sign In</h2>
 
-        // Verifica si el usuario ya está logueado al cargar la página
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-             window.location.href = 'pokedex.html';
+      <form id="loginForm">
+        <div style="margin-bottom: 1rem;">
+          <input 
+            type="email" 
+            id="email" 
+            placeholder="Trainer Email" 
+            required
+            style="width: 100%; padding: 0.8rem; border: 1.5px solid var(--primary); border-radius: var(--radius); font-size: 1rem;">
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="Password" 
+            required
+            style="width: 100%; padding: 0.8rem; border: 1.5px solid var(--primary); border-radius: var(--radius); font-size: 1rem;">
+        </div>
+
+        <button type="submit" class="btn" style="width: 100%;">Log In</button>
+
+        <p id="message" style="margin-top: 1rem; text-align: center; font-weight: 500;"></p>
+      </form>
+
+      <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #ddd;">
+
+      <button id="registerButton" class="btn" style="width: 100%; background: var(--accent);">
+        Register
+      </button>
+    </section>
+  </main>
+
+  <!-- ⚡ Footer -->
+  <footer>
+    © 2025 PokéLogs | Academic Project
+  </footer>
+
+  <!-- 🧠 Script -->
+  <script>
+    const API_URL = 'http://localhost:3000'; // Backend URL
+
+    // Check if the user is already logged in
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      window.location.href = 'pokedex.html';
+    }
+
+    // --- LOGIN ---
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const messageEl = document.getElementById('message');
+
+      try {
+        const response = await fetch(`${API_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          messageEl.textContent = data.message || 'Login successful!';
+          messageEl.style.color = 'green';
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('userEmail', data.email);
+          window.location.href = 'pokedex.html';
+        } else {
+          messageEl.textContent = 'Error: ' + (data.message || 'Invalid credentials');
+          messageEl.style.color = 'red';
         }
+      } catch (error) {
+        console.error('Connection error:', error);
+        messageEl.textContent = 'Could not connect to the server.';
+        messageEl.style.color = 'red';
+      }
+    });
 
-        // --- Lógica de Login ---
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const messageEl = document.getElementById('message');
+    // --- REGISTER ---
+    document.getElementById('registerButton').addEventListener('click', async () => {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const messageEl = document.getElementById('message');
 
-            try {
-                const response = await fetch(`${API_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    messageEl.textContent = data.message;
-                    messageEl.style.color = 'green';
-                    
-                    // Almacena el estado y redirige
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('userEmail', data.email);
-                    window.location.href = 'pokedex.html';
-                } else {
-                    messageEl.textContent = 'Error: ' + data.message;
-                    messageEl.style.color = 'red';
-                }
-            } catch (error) {
-                console.error('Error de conexión:', error);
-                messageEl.textContent = 'Error de conexión con el servidor.';
-                messageEl.style.color = 'red';
-            }
+      try {
+        const response = await fetch(`${API_URL}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
         });
 
-        // --- Lógica de Registro (Usando los mismos inputs) ---
-        document.getElementById('registerButton').addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const messageEl = document.getElementById('message');
-            
-            try {
-                const response = await fetch(`${API_URL}/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
+        const data = await response.json();
 
-                const data = await response.json();
-                
-                if (response.ok) {
-                    messageEl.textContent = data.message;
-                    messageEl.style.color = 'blue';
-                } else {
-                    messageEl.textContent = 'Error de registro: ' + data.message;
-                    messageEl.style.color = 'red';
-                }
-            } catch (error) {
-                messageEl.textContent = 'Error al intentar registrar: ' + error.message;
-                messageEl.style.color = 'red';
-            }
-        });
-    </script>
+        if (response.ok) {
+          messageEl.textContent = data.message || 'Registration successful!';
+          messageEl.style.color = 'blue';
+        } else {
+          messageEl.textContent = 'Registration error: ' + (data.message || 'Email already registered');
+          messageEl.style.color = 'red';
+        }
+      } catch (error) {
+        messageEl.textContent = 'Error while registering: ' + error.message;
+        messageEl.style.color = 'red';
+      }
+    });
+  </script>
 </body>
 </html>

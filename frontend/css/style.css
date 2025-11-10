@@ -1,0 +1,160 @@
+
+:root {
+  --primary: #ff4757;
+  --secondary: #2f3542;
+  --accent: #ffa502;
+  --bg-light: #f1f2f6;
+  --bg-dark: #1e272e;
+  --text-dark: #2f3542;
+  --text-light: #f5f6fa;
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: var(--bg-light);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+header {
+  background: var(--primary);
+  color: white;
+  padding: 1rem 2rem;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+
+main {
+  flex: 1;
+  width: 90%;
+  max-width: 900px;
+  margin: 2rem auto;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 2rem;
+}
+
+
+.card {
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.card img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+.card h3 {
+  font-size: 1.2rem;
+  color: var(--primary);
+  margin-bottom: 0.3rem;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+/* 🔍 Buscador o input */
+.search-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.search-box input {
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius) 0 0 var(--radius);
+  border: 2px solid var(--primary);
+  outline: none;
+  width: 70%;
+  font-size: 1rem;
+}
+
+.search-box button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.8rem 1rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.search-box button:hover {
+  background: var(--accent);
+}
+
+/* 🧱 Grid para Pokédex */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.2rem;
+}
+
+/* 📱 Responsivo */
+@media (max-width: 600px) {
+  main {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .card img {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+
+.btn {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background: var(--accent);
+}
+
+/* ⚡ Footer */
+footer {
+  background: var(--secondary);
+  color: var(--text-light);
+  text-align: center;
+  padding: 0.8rem;
+  font-size: 0.9rem;
+  margin-top: auto;
+}
