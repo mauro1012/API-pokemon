@@ -30,7 +30,7 @@ WORKDIR /app
 COPY --from=build /app/backend .
 
 # Expose port
-EXPOSE 3000
+EXPOSE 3006
 
 # Define environment variables (Render or Railway override these)
 ENV NODE_ENV=production
